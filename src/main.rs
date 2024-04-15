@@ -1,50 +1,53 @@
-mod path;
 mod error;
-mod base;
+mod cmd;
+mod util;
+mod cst;
 
 use std::env;
-use crate::path::{splice, alias, remove, list, find};
-use crate::base::show_help;
 use std::error::Error;
-
-fn dispatch_cmd(sub_cmd: &String) -> fn(Vec<String>) -> Result<String, Box<dyn Error>> {
-    match sub_cmd {
-        String::from("alias") => alias,
-        String::from("remove") => remove,
-        String::from("list") => list,
-        _ => splice,
-    }
-}
+use crate::cmd::alias::alias;
+use crate::cmd::cd::{find, splice};
+use crate::cmd::help::show_help;
+use crate::cmd::list::list;
+use crate::cmd::remove::remove;
 
 fn main() {
-    let func: fn(Vec<String>) -> Result<String, Box<dyn Error>>;
-    let dirs: Vec<String> = env::args().skip(1).collect();
+    let func: fn(Vec<&str>) -> Result<String, Box<dyn Error>>;
+    let args: Vec<String> = env::args().skip(1).collect();
+    let dirs: Vec<&str> = args.iter().map(|x| x.as_str()).collect();
     match dirs.len() {
         1 => {
-            if dirs[0] == "--help" {
-                func = show_help;
-            } else {
-                match find(dirs[0].as_str()) {
-                    Ok(output) => {
-                        print!("{}", output);
-                        std::process::exit(0);
-                    }
-                    Err(e) => {
-                        eprintln!("Error joining path: {}", e);
-                        std::process::exit(1);
+            match dirs[0] {
+                "--help" => func = show_help,
+                "--list" => func = list,
+                _ => {
+                    match find(dirs[0]) {
+                        Ok(cd_arg) => {
+                            print!("{}", cd_arg);
+                            std::process::exit(0);
+                        }
+                        Err(e) => {
+                            eprintln!("{}", e);
+                            std::process::exit(1);
+                        }
                     }
                 }
             }
         }
+        2 => func = remove,
         _ => {
-            func = dispatch_cmd(&dirs[1]);
+            match dirs[0] {
+                "--alias" => func = alias,
+                "--update" => func = update,
+                _ => func = splice
+            }
         }
     }
-
+    // match alias remove list
     match func(dirs) {
-        Ok(output) => print!("{}", output),
+        Ok(output) => println!("{}", output),
         Err(e) => {
-            eprintln!("Error joining path: {}", e);
+            eprintln!("Error occurred: {}", e);
             std::process::exit(1);
         }
     }

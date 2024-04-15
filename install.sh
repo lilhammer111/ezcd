@@ -1,14 +1,26 @@
 #!/bin/bash
-
+set -e
 # 编译项目
 cargo build --release
 
+# 定义ezcd function目标文件路径
+ezcd_func_target_dir="$HOME/.bashrc.bak.ezcd"
+bashrc_path="$HOME/.bashrc"
+
 # 检查并创建备份
-#cp ~/.bashrc ~/.bashrc.backup
+if [ ! -f "$ezcd_func_target_dir" ]; then
+    cp "$HOME/.bashrc" "$ezcd_func_target_dir" && echo "Backup created successfully." || echo "Failed to create backup."
+fi
+
+# ezcd-bin目录
+ezcd_bin_dir="$HOME/.local/bin"
 
 # 定义配置目录和文件
 config_dir="$HOME/.config/ezcd"
 alias_file="$config_dir/aliases.list"
+
+# 换行
+echo
 
 # 创建配置目录，如果它还不存在
 if [ ! -d "$config_dir" ]; then
@@ -28,8 +40,9 @@ fi
 ezcd_function='
 # ezcd is a shell function which utilize the ezcd-bin to make you change directory conveniently.
 function ezcd() {
-    if [[ "$1" != "alias" && "$1" != "list" && "$1" != "remove" && "$1" != "--help" ]]; then
+    if [[ "$1" != "--alias" && "$1" != "--list" && "$1" != "--remove" && "$1" != "--help" && "$1" != "--update"]]; then
         local dir=$(ezcd-bin "$@")
+        echo "The target directory is $dir."
         if [[ -n "$dir" && -d "$dir" ]]; then
             cd "$dir" || return
         else
@@ -42,27 +55,26 @@ function ezcd() {
 '
 
 # 添加ezcd函数到.bashrc，如果还没有添加的话
-if ! grep -q "function ezcd()" ~/.bashrc; then
-    echo "$ezcd_function" >> ~/.bashrc
-    echo "ezcd function added to .bashrc"
+if ! grep -q "function ezcd()" "$bashrc_path"; then
+    echo "$ezcd_function" >> "$bashrc_path"
+    echo "The function of ezcd was added to '$bashrc_path'."
 fi
 
 # 安装二进制文件
-cp target/release/ezcd-bin ~/.local/bin/ezcd-bin
+copied_path="$ezcd_bin_dir/ezcd-bin"
+cp target/release/ezcd-bin $copied_path
 # shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
-    echo "Failed to copy ezcd-bin to ~/.local/bin."
+    echo "Failed to copy ezcd-bin to $copied_path."
     exit 1
 fi
 
-chmod +x ~/.local/bin/ezcd-bin
+chmod +x $copied_path
 # shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
     echo "Failed to make ezcd-bin executable."
     exit 1
 fi
 
-echo "ezcd-bin installed successfully"
-
-echo "Installation complete. Please restart your terminal or source your .bashrc to use ezcd."
-
+echo "The CLI tool 'ezcd' installed successfully."
+echo "Please restart your terminal or source your '$bashrc_path' to use ezcd."
