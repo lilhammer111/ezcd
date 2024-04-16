@@ -40,18 +40,43 @@ fi
 ezcd_function='
 # ezcd is a shell function which utilize the ezcd-bin to make you change directory conveniently.
 function ezcd() {
-    if [[ "$1" != "--alias" && "$1" != "--list" && "$1" != "--remove" && "$1" != "--help" && "$1" != "--update"]]; then
+    # Check if no arguments are provided
+    if [[ $# -eq 0 ]]; then
+        echo "EZCD Error: The Arg of ezcd can not be empty."
+        return
+    fi
+
+    if [[ "$1" != "--set" && "$1" != "--list" && "$1" != "--remove" && "$1" != "--help" && "$1" != "--update" ]]; then
         local dir=$(ezcd-bin "$@")
-        echo "The target directory is $dir."
+        echo "[SHELL DEBUG] The target directory is $dir."
+        echo "[SHELL DEBUG] The dir is #$dir#."
         if [[ -n "$dir" && -d "$dir" ]]; then
             cd "$dir" || return
         else
-            echo "The directory does not exist."
+            echo "$dir"
         fi
     else
         ezcd-bin "$@"
     fi
 }
+
+# 补全函数
+_ezcd_completion() {
+    # COMPREPLY 是 Bash 补全的数组变量，用于存储补全结果
+    COMPREPLY=()
+    # 当前的单词
+    local current_word="${COMP_WORDS[COMP_CWORD]}"
+
+    # 这里你可以调用你的二进制文件或其他命令来生成补全建议
+    # 假设 ezcd-bin --suggest 可以根据当前输入给出建议
+    local suggestions=$(ezcd-bin --suggest "$current_word")
+
+    # 将建议结果分配给 COMPREPLY
+    COMPREPLY=($(compgen -W "${suggestions}" -- "${current_word}"))
+}
+
+# 注册补全函数到 ezcd 命令
+complete -F _ezcd_completion ezcd
 '
 
 # 添加ezcd函数到.bashrc，如果还没有添加的话

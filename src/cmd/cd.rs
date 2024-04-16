@@ -2,7 +2,8 @@ use std::error::Error;
 use std::fs::File;
 use std::io;
 use std::io::Read;
-use crate::error::PathError;
+use std::path::Path;
+use crate::error::EzcdError;
 use crate::util::load_config_file;
 
 pub fn find(alias: &str) -> Result<String, Box<dyn Error>> {
@@ -15,6 +16,7 @@ pub fn find(alias: &str) -> Result<String, Box<dyn Error>> {
     let err = Box::new(io::Error::new(io::ErrorKind::NotFound, "Alias does not exist."));
     alias_and_path.iter().enumerate().find_map(|(idx, &ele)| {
         if ele == alias {
+            eprintln!("[EZCD-BIN DEBUG] find output: {}", alias_and_path[idx + 1].to_string());
             Some(alias_and_path[idx + 1].to_string())
         } else {
             None
@@ -24,12 +26,12 @@ pub fn find(alias: &str) -> Result<String, Box<dyn Error>> {
 
 pub fn splice(dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
     if dirs.is_empty() {
-        return Err(Box::new(PathError::EmptyInput));
+        return Err(Box::new(EzcdError::EmptyInput));
     }
 
     let path = dirs.join("/");
-    // if !Path::new(&path).exists() {
-    //     return Err(Box::new(PathError::PathDoesNotExist(path)));
-    // }
+    if !Path::new(&path).exists() {
+        return Err(Box::new(EzcdError::PathNotExist(path)));
+    }
     Ok(path)
 }
