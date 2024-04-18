@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
-# 编译项目
-cargo build --release
+## 编译项目
+#cargo build --release
 
 # 定义ezcd function目标文件路径
 ezcd_func_target_dir="$HOME/.bashrc.bak.ezcd"

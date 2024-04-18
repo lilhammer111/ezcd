@@ -2,6 +2,8 @@ mod error;
 mod cmd;
 mod util;
 mod cst;
+#[macro_use]
+mod log;
 
 use std::env;
 use std::error::Error;
@@ -12,15 +14,15 @@ use crate::cmd::help::show_help;
 
 fn main() {
     let entire_args: Vec<String> = env::args().collect();
-    eprintln!("[EZCD-BIN DEBUG] entire_args: {:?}", entire_args);
+    debug_eprintln!("[EZCD-BIN DEBUG] entire_args: {:?}", entire_args);
     // if entire_args.len() == 1 {
-    //     eprintln!("The Arg of ezcd can't be empty.");
+    //     debug_eprintln!("The Arg of ezcd can't be empty.");
     //     std::process::exit(1)
     // }
     // skip the first arg: ezcd-bin
     let args_without_prefix: Vec<String> = env::args().skip(1).collect();
     let dirs: Vec<&str> = args_without_prefix.iter().map(|x| x.as_str()).collect();
-    eprintln!("[EZCD-BIN DEBUG] dirs: {:?}", dirs);
+    debug_eprintln!("[EZCD-BIN DEBUG] dirs: {:?}", dirs);
 
     let func: fn(Vec<&str>) -> Result<String, Box<dyn Error>>;
     match dirs[0] {
@@ -35,7 +37,7 @@ fn main() {
                     std::process::exit(0)
                 }
                 Err(e) => {
-                    eprintln!("{}", e);
+                    debug_eprintln!("{}", e);
                     std::process::exit(1)
                 }
             }
@@ -54,7 +56,7 @@ fn main() {
                         }
                         Err(e) => {
                             println!("EZCD Error: {}", e);
-                            // eprintln!("EZCD Error: {}", e);
+                            // debug_eprintln!("EZCD Error: {}", e);
                             std::process::exit(1);
                         }
                     }
@@ -67,7 +69,7 @@ fn main() {
     match func(dirs) {
         Ok(output) => println!("{}", output),
         Err(e) => {
-            eprintln!("EZCD Error: {}", e);
+            debug_eprintln!("EZCD Error: {}", e);
             std::process::exit(1);
         }
     }

@@ -10,3 +10,7 @@ edition = "2021"
 [[bin]]
 name = "ezcd-bin"
 path = "src/main.rs"
+
+
+[features]
+logging = []
