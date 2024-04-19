@@ -32,13 +32,13 @@ echo
 # 创建配置目录，如果它还不存在
 if [ ! -d "$config_dir" ]; then
     mkdir -p "$config_dir"
-    echo "$suc_prefix_emoji ${GREEN}Created configuration directory at $config_dir"
+    echo "$suc_prefix_emoji ${GREEN}Created configuration directory at $config_dir."
 fi
 
 # 创建别名文件，如果它还不存在
 if [ ! -f "$alias_file" ]; then
     touch "$alias_file"
-    echo "$suc_prefix_emoji ${GREEN}Created alias file at $alias_file"
+    echo "$suc_prefix_emoji ${GREEN}Created alias file at $alias_file."
 fi
 
 
@@ -110,3 +110,4 @@ fi
 
 echo "$suc_prefix_emoji ${GREEN}The CLI tool 'ezcd' installed successfully."
 echo "$suc_prefix_emoji ${GREEN}Please restart your terminal or source your '$bashrc_path' to use ezcd."
+echo
