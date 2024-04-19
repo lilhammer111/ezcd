@@ -41,7 +41,6 @@ if [ ! -f "$alias_file" ]; then
     echo "$suc_prefix_emoji ${GREEN}Created alias file at $alias_file."
 fi
 
-
 # 定义ezcd函数
 # shellcheck disable=SC2016
 ezcd_function='
@@ -55,8 +54,7 @@ function ezcd() {
 
     if [[ "$1" != "--set" && "$1" != "--list" && "$1" != "--remove" && "$1" != "--help" && "$1" != "--update" ]]; then
         local dir=$(ezcd-bin "$@")
-        echo "[SHELL DEBUG] The target directory is $dir."
-        echo "[SHELL DEBUG] The dir is #$dir#."
+
         if [[ -n "$dir" && -d "$dir" ]]; then
             cd "$dir" || return
         else
