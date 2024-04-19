@@ -7,9 +7,16 @@ set -e
 ezcd_func_target_dir="$HOME/.bashrc.bak.ezcd"
 bashrc_path="$HOME/.bashrc"
 
+# 定义echo输出的前缀emoji
+suc_prefix_emoji="💖"
+fail_prefix_emoji="💔"
+
+# 定义输出颜色
+GREEN=$'\e[0;32m'
+
 # 检查并创建备份
 if [ ! -f "$ezcd_func_target_dir" ]; then
-    cp "$HOME/.bashrc" "$ezcd_func_target_dir" && echo "Backup created successfully." || echo "Failed to create backup."
+    cp "$HOME/.bashrc" "$ezcd_func_target_dir" && echo "$suc_prefix_emoji ${GREEN}Backup created successfully." || echo "$fail_prefix_emoji Failed to create backup."
 fi
 
 # ezcd-bin目录
@@ -25,13 +32,13 @@ echo
 # 创建配置目录，如果它还不存在
 if [ ! -d "$config_dir" ]; then
     mkdir -p "$config_dir"
-    echo "Created configuration directory at $config_dir"
+    echo "$suc_prefix_emoji ${GREEN}Created configuration directory at $config_dir"
 fi
 
 # 创建别名文件，如果它还不存在
 if [ ! -f "$alias_file" ]; then
     touch "$alias_file"
-    echo "Created alias file at $alias_file"
+    echo "$suc_prefix_emoji ${GREEN}Created alias file at $alias_file"
 fi
 
 
@@ -82,7 +89,7 @@ complete -F _ezcd_completion ezcd
 # 添加ezcd函数到.bashrc，如果还没有添加的话
 if ! grep -q "function ezcd()" "$bashrc_path"; then
     echo "$ezcd_function" >> "$bashrc_path"
-    echo "The function of ezcd was added to '$bashrc_path'."
+    echo "$suc_prefix_emoji ${GREEN}The function of ezcd was added to '$bashrc_path'."
 fi
 
 # 安装二进制文件
@@ -90,16 +97,16 @@ copied_path="$ezcd_bin_dir/ezcd-bin"
 cp target/release/ezcd-bin $copied_path
 # shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
-    echo "Failed to copy ezcd-bin to $copied_path."
+    echo "$fail_prefix_emoji Failed to copy ezcd-bin to $copied_path."
     exit 1
 fi
 
 chmod +x $copied_path
 # shellcheck disable=SC2181
 if [ $? -ne 0 ]; then
-    echo "Failed to make ezcd-bin executable."
+    echo "$fail_prefix_emoji Failed to make ezcd-bin executable."
     exit 1
 fi
 
-echo "The CLI tool 'ezcd' installed successfully."
-echo "Please restart your terminal or source your '$bashrc_path' to use ezcd."
+echo "$suc_prefix_emoji ${GREEN}The CLI tool 'ezcd' installed successfully."
+echo "$suc_prefix_emoji ${GREEN}Please restart your terminal or source your '$bashrc_path' to use ezcd."

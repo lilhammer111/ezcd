@@ -1,25 +1,87 @@
-# ezcd
+# 🐻 Introduction
 
-ezcd is a cutting-edge tool designed to revolutionize the way users navigate directories in the command line. With this tool, you can navigate subdirectories using spaces instead of slashes, and employ path aliases to directly access desired directories from any location. This Rust-based tool integrates seamlessly with your existing shell environment, enhancing your productivity and simplifying directory navigation. Start enhancing your command line experience with ezcd today.
+`ezcd` is a cutting-edge tool designed to revolutionize the way users navigate directories in the command line. With this tool, you can navigate subdirectories using spaces instead of slashes, and employ path aliases to directly access desired directories from any location. This Rust-based tool integrates seamlessly with your existing shell environment, enhancing your productivity and simplifying directory navigation. Start enhancing your command line experience with `ezcd` today.
 
+# 🐻 Install
 
-# Usage
-1. 使用`cargo build --release`编译项目，会在`ezcd/target/release`下生成一个`ezcd-bin`的可执行文件。
+### Cloning
 
-2. 修改ezcd项目根目录下的`install.sh`的权限并执行这个脚本，在ezcd根目录下执行：
+Open your terminal, enter any directory where you want to install the project, and type:
 
-   ```bash
-    chmod +x install.sh && ./install.sh
-   ```
-3. 然后打开一个新终端，我们就可以开始体验`ezcd`命令了：
-    
-    例如，我们使用`ezcd`来为当前的ezcd项目目录设置一个别名吧。
-    
-    ```bash
-    ezcd --set ep
-   ```
-   ep是ezcd project的缩写，你也可以替换成任意你自己喜欢的名称。
+```bash
+git clone https://github.com/lilhammer111/ezcd.git
+```
 
-    让我们来验证是否成功设置了别名。
+### Compiling
 
-    我们可以使用`ezcd --list`列出所有别名，此外，我们来实际验证一下，通过`cd`命令进入家目录，然后使用`ezcd ep`，看看是否正确切换了工作目录！
+Enter the project root directory:
+
+```bash
+cd ezcd
+```
+
+Compile the project, which will generate an executable named `ezcd-bin` in the `ezcd/target/release` directory:
+
+```bash
+cargo build --release
+```
+
+### Configuration
+
+Modify the permissions of `install.sh` in the `ezcd` project root directory and execute this script:
+
+```bash
+chmod +x install.sh && ./install.sh
+```
+
+If you see an output like this, everything is successfully completed:
+
+```bash
+...
+💖 The CLI tool 'ezcd' installed successfully.
+💖 Please restart your terminal or source your '/home/user/.bashrc' to use ezcd.
+```
+
+# 🐻 Usage
+
+You can use `--help` to view all currently available commands:
+
+```bash
+ezcd --help
+```
+
+The simplest usage of `ezcd` is the same as `cd`, except that it uses **spaces** instead of **slash** symbols.
+
+For example, in the `cd` command, if we want to enter a folder, the command might look like this:
+
+```bash
+cd Codes/RustProjects/ezcd
+```
+
+In `ezcd`, the same command would look like this:
+
+```bash
+ezcd Codes RustProjects ezcd
+```
+
+`ezcd` also has other very useful commands, for example, we can use `ezcd` to set an **alias** for the current directory. Assuming that our current directory is at `~/Codes/RustProjects/ezcd`, then we can use `--set` to set an alias for this directory:
+
+```bash
+ezcd --set ep
+```
+
+`ep` is an abbreviation for the meaning of **ezcd project**, but you can replace it with any name you like. Let's use `--list` to verify if the alias was set successfully:
+
+```bash
+ezcd --list
+```
+
+Furthermore, let's verify it practically by using the `cd` command to enter the home directory, then using `ezcd ep` to see if it switches the working directory correctly!
+
+Well, that's about all the functionality `ezcd` supports right now. Although it's simple, we hope to enhance the capabilities of this tool in future iterations.
+
+# 🐻 Todo
+
+1. Directory names are not case-sensitive.
+2. Auto-complete directory names.
+3. ...
