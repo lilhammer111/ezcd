@@ -1,7 +1,6 @@
 use std::env;
-use crate::cst::CONFIG_FILE;
 
-pub fn load_config_file() -> String {
+pub fn load_file(rela_path: &str) -> String {
     let home_dir = env::var("HOME").expect("Failed to read the home fir");
-    format!("{}/{}", home_dir, CONFIG_FILE)
+    format!("{}/{}", home_dir, rela_path)
 }

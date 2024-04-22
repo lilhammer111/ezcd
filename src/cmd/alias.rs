@@ -4,7 +4,8 @@ use std::error::Error;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use crate::error::EzcdError;
-use crate::util::load_config_file;
+use crate::util::load_file;
+use crate::cst::CONFIG_PATH;
 
 pub fn set(dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
     if dirs.len() < 2 {
@@ -26,7 +27,7 @@ pub fn set(dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
         );
     }
 
-    let config_file = load_config_file();
+    let config_file = load_file(CONFIG_PATH);
     let config_file = config_file.as_str();
     let mut file = OpenOptions::new().append(true).open(config_file)
         .map_err(|e| format!("Failed to open file of {}: {}", config_file, e))?;
@@ -47,7 +48,7 @@ pub fn remove(dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
     }
 
     let alias = dirs[1];
-    let config_file = load_config_file();
+    let config_file = load_file(CONFIG_PATH);
     let config_file = config_file.as_str();
     let content = fs::read_to_string(config_file)?;
 
@@ -81,7 +82,7 @@ pub fn update(dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
 
 pub fn list() -> Result<String, Box<dyn Error>> {
     // read config file
-    let config_file = load_config_file();
+    let config_file = load_file(CONFIG_PATH);
     let mut file = File::open(config_file)?;
     let mut content = String::new();
     file.read_to_string(&mut content)?;

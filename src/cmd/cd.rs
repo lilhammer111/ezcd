@@ -5,10 +5,11 @@ use std::io::Read;
 use std::path::Path;
 use crate::debug_eprintln;
 use crate::error::EzcdError;
-use crate::util::load_config_file;
+use crate::util::load_file;
+use crate::cst::CONFIG_PATH;
 
 pub fn find(alias: &str) -> Result<String, Box<dyn Error>> {
-    let config_file = load_config_file();
+    let config_file = load_file(CONFIG_PATH);
     let mut file = File::open(config_file)?;
     let mut content = String::new();
     file.read_to_string(&mut content)?;
@@ -35,4 +36,8 @@ pub fn splice(dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
         return Err(Box::new(EzcdError::PathNotExist(path)));
     }
     Ok(path)
+}
+
+pub fn suggest(_dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
+    Err(Box::new(EzcdError::EmptyInput))
 }

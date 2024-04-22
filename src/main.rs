@@ -8,7 +8,7 @@ mod log;
 use std::env;
 use std::error::Error;
 use crate::cmd::alias::{set, list, update, remove};
-use crate::cmd::cd::{find, splice};
+use crate::cmd::cd::{find, splice, suggest};
 use crate::cmd::help::show_help;
 
 
@@ -29,14 +29,16 @@ fn main() {
         "--update" => func = update,
         "--remove" => func = remove,
         "--help" => func = show_help,
+        "--suggest" => func = suggest,
         "--list" => {
             match list() {
                 Ok(resp) => {
                     println!("{}", resp);
                     std::process::exit(0)
                 }
-                Err(_e) => {
-                    debug_eprintln!("{}", _e);
+                Err(e) => {
+                    // debug_eprintln!("{}", _e);
+                    log::write(e);
                     std::process::exit(1)
                 }
             }
@@ -67,8 +69,9 @@ fn main() {
     // match set remove update help
     match func(args) {
         Ok(output) => println!("{}", output),
-        Err(_e) => {
-            debug_eprintln!("EZCD Error: {}", _e);
+        Err(e) => {
+            // debug_eprintln!("EZCD Error: {}", _e);
+            log::write(e);
             std::process::exit(1);
         }
     }

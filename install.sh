@@ -25,6 +25,7 @@ ezcd_bin_dir="$HOME/.local/bin"
 # 定义配置目录和文件
 config_dir="$HOME/.config/ezcd"
 alias_file="$config_dir/aliases.list"
+log_dir="$HOME/.config/ezcd/log"
 
 # 换行
 echo
@@ -35,7 +36,13 @@ if [ ! -d "$config_dir" ]; then
     echo "$suc_prefix_emoji ${GREEN}Created configuration directory at $config_dir."
 fi
 
-# 创建别名文件，如果它还不存在
+# 创建日志文件夹，如果他还不存在
+if [ ! -d "$log_dir" ]; then
+    mkdir -p "$log_dir"
+    echo "$suc_prefix_emoji ${GREEN}Created log directory at $log_dir."
+fi
+
+# 创建别名列表文件，如果它还不存在
 if [ ! -f "$alias_file" ]; then
     touch "$alias_file"
     echo "$suc_prefix_emoji ${GREEN}Created alias file at $alias_file."
@@ -67,20 +74,29 @@ function ezcd() {
 
 # 补全函数
 _ezcd_completion() {
-    # COMPREPLY 是 Bash 补全的数组变量，用于存储补全结果
-    COMPREPLY=()
-    # 当前的单词
-    local current_word="${COMP_WORDS[COMP_CWORD]}"
+    # 检查是否已经获取了补全列表
+    if [ -z "${#COMPREPLY[@]}" ]; then
+        local current_word="${COMP_WORDS[COMP_CWORD]}"
+        local words = "${COMP_WORDS}"
+        local suggestions=$(ezcd-bin --suggest "$words")
+        COMPREPLY=($(compgen -W "${suggestions}" -- "${current_word}"))
+        # 初始化补全索引
+        COMP_CWORD_BACKUP=0
+    fi
 
-    # 这里你可以调用你的二进制文件或其他命令来生成补全建议
-    # 假设 ezcd-bin --suggest 可以根据当前输入给出建议
-    local suggestions=$(ezcd-bin --suggest "$current_word")
-
-    # 将建议结果分配给 COMPREPLY
-    COMPREPLY=($(compgen -W "${suggestions}" -- "${current_word}"))
+    # 检查是否是连续的 Tab 按键
+    if [[ "${COMP_TYPE}" = "tab" ]]; then
+        # 移动到下一个补全选项
+        ((COMP_CWORD_BACKUP++))
+        # 如果索引超出了补全列表的范围，则重置
+        if [ "${COMP_CWORD_BACKUP}" -ge "${#COMPREPLY[@]}" ]; then
+            COMP_CWORD_BACKUP=0
+        fi
+        COMPREPLY=("${COMPREPLY[COMP_CWORD_BACKUP]}")
+    fi
 }
 
-# 注册补全函数到 ezcd 命令
+# 使用 complete 命令注册补全函数
 complete -F _ezcd_completion ezcd
 '
 
