@@ -2,6 +2,11 @@
 
 `ezcd` is a cutting-edge tool designed to revolutionize the way users navigate directories in the command line. With this tool, you can navigate subdirectories using **spaces** instead of **slashes**, and employ path **aliases** to directly access desired directories from any location. This Rust-based tool integrates seamlessly with your existing shell environment, enhancing your productivity and simplifying directory navigation. Start enhancing your command line experience with `ezcd` today.
 
+# 🐻 Todo
+
+- [x] Auto-complete directory names.
+- [ ] Directory names are not case-sensitive.
+
 # 🐻 Install
 
 ### Cloning
@@ -38,8 +43,8 @@ If you see an output like this, everything is successfully completed:
 
 ```bash
 ...
-💖 The CLI tool 'ezcd' installed successfully.
-💖 Please restart your terminal or source your '/home/user/.bashrc' to use ezcd.
+💖 The cli tool 'ezcd' installed successfully.
+💖 Please restart your terminal or source your '/home/<your-name>/.bashrc' to use ezcd.
 ```
 
 Okay, let's open a new terminal and start experiencing `ezcd`!
@@ -82,8 +87,10 @@ Furthermore, let's verify it practically by using the `cd` command to enter the 
 
 Well, that's about all the functionality `ezcd` supports right now. Although it's simple, we hope to enhance the capabilities of this tool in future iterations.
 
-# 🐻 Todo
+------
 
-1. Directory names are not case-sensitive.
-2. Auto-complete directory names.
-3. ...
+Exciting news! I've added an auto-completion feature to `ezcd`. Take a peek at the demo video below to see it in action.
+
+**Quick Tip**: Simply hit the `Tab` key for auto-completion—unlike the usual `cd` command. Got more than one option? No problem! Just keep pressing `Tab` to cycle through all available choices. Easy, right?
+
+<video src="/home/lilhammer/Videos/Screencasts/auto_compl_demo.webm"></video>
