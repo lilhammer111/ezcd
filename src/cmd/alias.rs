@@ -7,19 +7,19 @@ use crate::error::EzcdError;
 use crate::util::load_file;
 use crate::cst::CONFIG_PATH;
 
-pub fn set(dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
-    if dirs.len() < 2 {
+pub fn set(args: Vec<&str>) -> Result<String, Box<dyn Error>> {
+    if args.len() < 2 {
         return Err(Box::new(EzcdError::MismatchedArgs));
     }
 
-    let alias = dirs[1];
+    let alias = args[1];
     let cur_dir = current_dir()?;
     let abs_path: String;
 
-    if dirs.len() == 2 {
+    if args.len() == 2 {
         abs_path = cur_dir.to_string_lossy().into_owned();
     } else {
-        let path_dirs = dirs[2..].to_vec();
+        let path_dirs = args[2..].to_vec();
         abs_path = format!(
             "{}/{}",
             cur_dir.to_str().ok_or("Path contains invalid UTF-8 characters")?,
@@ -42,12 +42,12 @@ pub fn set(dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
 }
 
 
-pub fn remove(dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
-    if dirs.len() < 2 {
+pub fn remove(args: Vec<&str>) -> Result<String, Box<dyn Error>> {
+    if args.len() < 2 {
         return Err(Box::new(EzcdError::MismatchedArgs));
     }
 
-    let alias = dirs[1];
+    let alias = args[1];
     let config_file = load_file(CONFIG_PATH);
     let config_file = config_file.as_str();
     let content = fs::read_to_string(config_file)?;
@@ -74,9 +74,9 @@ pub fn remove(dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
 }
 
 
-pub fn update(dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
-    let copied_dirs = dirs.clone();
-    remove(dirs)?;
+pub fn update(args: Vec<&str>) -> Result<String, Box<dyn Error>> {
+    let copied_dirs = args.clone();
+    remove(args)?;
     set(copied_dirs)
 }
 

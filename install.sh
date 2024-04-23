@@ -60,7 +60,7 @@ function ezcd() {
     fi
 
     if [[ "$1" != "--set" && "$1" != "--list" && "$1" != "--remove" && "$1" != "--help" && "$1" != "--update" ]]; then
-        local dir=$(ezcd-bin "$@")
+        local dir=$(ezcd-bin "${@:2}")
 
         if [[ -n "$dir" && -d "$dir" ]]; then
             cd "$dir" || return
@@ -72,32 +72,28 @@ function ezcd() {
     fi
 }
 
-# 补全函数
 _ezcd_completion() {
-    # 检查是否已经获取了补全列表
-    if [ -z "${#COMPREPLY[@]}" ]; then
-        local current_word="${COMP_WORDS[COMP_CWORD]}"
-        local words = "${COMP_WORDS}"
-        local suggestions=$(ezcd-bin --suggest "$words")
-        COMPREPLY=($(compgen -W "${suggestions}" -- "${current_word}"))
-        # 初始化补全索引
-        COMP_CWORD_BACKUP=0
+    local current_word="${COMP_WORDS[COMP_CWORD]}"
+    local words="${COMP_WORDS[@]}"
+
+    if [[ "$PREV_COMP_WORDS" != "$words" ]]; then
+        IFS=" " read -ra EZCD_COMPLETIONS <<< "$(ezcd-bin --suggest "$words")"
+        EZCD_INDEX=0
+        PREV_COMP_WORDS="$words"
     fi
 
-    # 检查是否是连续的 Tab 按键
-    if [[ "${COMP_TYPE}" = "tab" ]]; then
-        # 移动到下一个补全选项
-        ((COMP_CWORD_BACKUP++))
-        # 如果索引超出了补全列表的范围，则重置
-        if [ "${COMP_CWORD_BACKUP}" -ge "${#COMPREPLY[@]}" ]; then
-            COMP_CWORD_BACKUP=0
+    if [[ "${#EZCD_COMPLETIONS[@]}" -gt 0 ]]; then
+        if [[ "$EZCD_INDEX" -ge "${#EZCD_COMPLETIONS[@]}" ]]; then
+            EZCD_INDEX=0
         fi
-        COMPREPLY=("${COMPREPLY[COMP_CWORD_BACKUP]}")
+        COMPREPLY=("${EZCD_COMPLETIONS[EZCD_INDEX]}")
+        ((EZCD_INDEX++))
+    else
+        COMPREPLY=()
     fi
 }
 
-# 使用 complete 命令注册补全函数
-complete -F _ezcd_completion ezcd
+complete -o nospace -F _ezcd_completion ezcd
 '
 
 # 添加ezcd函数到.bashrc，如果还没有添加的话

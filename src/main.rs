@@ -19,8 +19,9 @@ fn main() {
     //     std::process::exit(1)
     // }
     // skip the first arg: ezcd-bin
-    let args_without_prefix: Vec<String> = env::args().skip(1).collect();
-    let args: Vec<&str> = args_without_prefix.iter().map(|x| x.as_str()).collect();
+    let args: Vec<String> = env::args().skip(1).collect();
+    // let args= args.iter().map(AsRef::as_ref).collect();
+    let args: Vec<&str> = args.iter().map(|x| x.as_str()).collect();
     debug_eprintln!("[EZCD-BIN DEBUG] args: {:?}", args);
 
     let func: fn(Vec<&str>) -> Result<String, Box<dyn Error>>;
