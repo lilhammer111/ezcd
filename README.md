@@ -93,4 +93,4 @@ Exciting news! I've added an auto-completion feature to `ezcd`. Take a peek at t
 
 **Quick Tip**: Simply hit the `Tab` key for auto-completion—unlike the usual `cd` command. Got more than one option? No problem! Just keep pressing `Tab` to cycle through all available choices. Easy, right?
 
-<video src="/home/lilhammer/Videos/Screencasts/auto_compl_demo.webm"></video>
+![auto completion demo](/home/lilhammer/Pictures/Screenshots/auto_com_demo.gif)
