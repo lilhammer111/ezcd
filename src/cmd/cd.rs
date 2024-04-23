@@ -8,6 +8,7 @@ use crate::debug_eprintln;
 use crate::error::EzcdError;
 use crate::util::load_file;
 use crate::cst::CONFIG_PATH;
+use crate::log;
 
 pub fn find(alias: &str) -> Result<String, Box<dyn Error>> {
     let config_file = load_file(CONFIG_PATH);
@@ -44,9 +45,10 @@ pub fn splice(dirs: Vec<&str>) -> Result<String, Box<dyn Error>> {
 // main函数中已经skip了ezcd-bin，
 // 所以suggest函数中传入的args是--suggest ezcd Codes Rus
 pub fn suggest(args: Vec<&str>) -> Result<String, Box<dyn Error>> {
-    use crate::log;
-    let log_info = format!("args: {:?}",args);
-    log::write(Box::new(EzcdError::Other(log_info)));
+    if args.len() < 3 {
+        return Err(Box::new(EzcdError::MismatchedArgs))
+    }
+
     let path_prefix: String;
     if let Ok(path) = current_dir() {
         path_prefix = path.to_string_lossy().to_string()
@@ -59,15 +61,25 @@ pub fn suggest(args: Vec<&str>) -> Result<String, Box<dyn Error>> {
     }
 
     let parent_path = match args.len() {
-        1 => { path_prefix }
+        3 => { path_prefix }
         _ => {
+            let rela_path = args[2..args.len()-1].join("/");
+            let log_info =format!("rela_path: {}",rela_path);
+            log::write(
+                Box::new(EzcdError::Other(log_info))
+            );
             format!(
                 "{}/{}",
                 path_prefix,
-                args[1..args.len() - 1].join("/")
+                rela_path
             )
         }
     };
+
+    let log_info =format!("parent_path: {}",parent_path);
+    log::write(
+        Box::new(EzcdError::Other(log_info))
+    );
 
     let mut dirs = Vec::new();
 
@@ -77,12 +89,8 @@ pub fn suggest(args: Vec<&str>) -> Result<String, Box<dyn Error>> {
         if son_entry.is_dir() {
             if let Some(dir) = son_entry.file_name() {
                 if let Some(dir) = dir.to_str() {
-                    let prefix = args[args.len()-1];
-                    let log_info =format!("prefix: {}",prefix);
-                    log::write(
-                        Box::new(EzcdError::Other(log_info))
-                    );
-                    if dir.starts_with(prefix) {
+                    let completion = args[args.len()-1];
+                    if dir.starts_with(completion) {
                         dirs.push(dir.to_owned());
                     }
                 }
@@ -91,6 +99,9 @@ pub fn suggest(args: Vec<&str>) -> Result<String, Box<dyn Error>> {
     }
 
     let ret = dirs.join(" ");
-
+    let log_info =format!("ret: {}",ret);
+    log::write(
+        Box::new(EzcdError::Other(log_info))
+    );
     Ok(ret)
 }

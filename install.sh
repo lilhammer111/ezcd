@@ -26,6 +26,7 @@ ezcd_bin_dir="$HOME/.local/bin"
 config_dir="$HOME/.config/ezcd"
 alias_file="$config_dir/aliases.list"
 log_dir="$HOME/.config/ezcd/log"
+env_shell_file="$HOME/.config/ezcd/env.sh"
 
 # 换行
 echo
@@ -48,19 +49,23 @@ if [ ! -f "$alias_file" ]; then
     echo "$suc_prefix_emoji ${GREEN}Created alias file at $alias_file."
 fi
 
+# 创建env shell脚本文件
+if [ ! -f "$env_shell_file" ]; then
+    touch "$env_shell_file"
+    echo "$suc_prefix_emoji ${GREEN}Created env shell file at $env_shell_file."
+fi
+
 # 定义ezcd函数
 # shellcheck disable=SC2016
-ezcd_function='
-# ezcd is a shell function which utilize the ezcd-bin to make you change directory conveniently.
+env_shell_content='# ezcd is a shell function which utilize the ezcd-bin to make you change directory conveniently.
 function ezcd() {
     # Check if no arguments are provided
     if [[ $# -eq 0 ]]; then
         echo "EZCD Error: The Arg of ezcd can not be empty."
         return
     fi
-
     if [[ "$1" != "--set" && "$1" != "--list" && "$1" != "--remove" && "$1" != "--help" && "$1" != "--update" ]]; then
-        local dir=$(ezcd-bin "${@:2}")
+        local dir=$(ezcd-bin "$@")
 
         if [[ -n "$dir" && -d "$dir" ]]; then
             cd "$dir" || return
@@ -72,22 +77,26 @@ function ezcd() {
     fi
 }
 
+declare -a EZCD_COMPLETIONS=()
+declare -i EZCD_INDEX=0
+declare PREV_COMP_WORDS=""
+
 _ezcd_completion() {
     local current_word="${COMP_WORDS[COMP_CWORD]}"
-    local words="${COMP_WORDS[@]}"
-
-    if [[ "$PREV_COMP_WORDS" != "$words" ]]; then
-        IFS=" " read -ra EZCD_COMPLETIONS <<< "$(ezcd-bin --suggest "$words")"
+    if [[ ! " ${EZCD_COMPLETIONS[*]} " =~ " ${current_word} " ]]; then
+        EZCD_COMPLETIONS=()
         EZCD_INDEX=0
-        PREV_COMP_WORDS="$words"
+        IFS=" " read -ra EZCD_COMPLETIONS <<< "$(ezcd-bin --suggest "${COMP_WORDS[@]}")"
     fi
 
-    if [[ "${#EZCD_COMPLETIONS[@]}" -gt 0 ]]; then
+    if [[ "${#EZCD_COMPLETIONS[@]}" -gt 1 ]]; then
         if [[ "$EZCD_INDEX" -ge "${#EZCD_COMPLETIONS[@]}" ]]; then
             EZCD_INDEX=0
         fi
         COMPREPLY=("${EZCD_COMPLETIONS[EZCD_INDEX]}")
         ((EZCD_INDEX++))
+    elif [[ "${#EZCD_COMPLETIONS[@]}" -eq 1 ]]; then
+        COMPREPLY=("${EZCD_COMPLETIONS[0]} ")
     else
         COMPREPLY=()
     fi
@@ -96,10 +105,21 @@ _ezcd_completion() {
 complete -o nospace -F _ezcd_completion ezcd
 '
 
-# 添加ezcd函数到.bashrc，如果还没有添加的话
-if ! grep -q "function ezcd()" "$bashrc_path"; then
-    echo "$ezcd_function" >> "$bashrc_path"
-    echo "$suc_prefix_emoji ${GREEN}The function of ezcd was added to '$bashrc_path'."
+# 覆盖写入上述脚本到env_shell_file中
+echo "$env_shell_content" > "$env_shell_file"
+if [ $? -eq 0 ]; then
+    echo "$suc_prefix_emoji ${GREEN}Ezcd configuration has been successfully written to $env_shell_file."
+else
+    echo "$fail_prefix_emoji Failed to write ezcd configuration to $env_shell_file."
+fi
+
+# 检查是否已经有了这个 source 行
+if grep -Fxq "source $env_shell_file" "$bashrc_path"
+then
+    echo "$suc_prefix_emoji ${GREEN}The source line already exists in $bashrc_path."
+else
+    echo "source $env_shell_file" >> "$bashrc_path"
+    echo "$suc_prefix_emoji ${GREEN}Added 'source $env_shell_file' to $bashrc_path."
 fi
 
 # 安装二进制文件
