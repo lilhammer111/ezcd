@@ -71,6 +71,12 @@ In `ezcd`, the same command would look like this:
 ezcd Codes RustProjects ezcd
 ```
 
+A brief digression before we continue with the usage of ezcd: although replacing **slashes** with **spaces** in path representation might seem like a minor change, we cannot overlook the convenience of hitting the space bar on a keyboard compared to finding the slash key. 
+
+More importantly, this seemingly insignificant modification reflects a commitment **to not giving up on excellence, even if the improvements are minor.** 
+
+This philosophy is precisely why I started this project.Okay, let's get back to the usage.
+
 `ezcd` also has other very useful commands, for example, we can use `ezcd` to set an **alias** for the current directory. Assuming that our current directory is at `~/Codes/RustProjects/ezcd`, then we can use `--set` to set an alias for this directory:
 
 ```bash
