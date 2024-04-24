@@ -91,6 +91,7 @@ Well, that's about all the functionality `ezcd` supports right now. Although it'
 
 Exciting news! I've added an auto-completion feature to `ezcd`. Take a peek at the demo video below to see it in action.
 
+![auto completion demo](https://github.com/lilhammer111/hammer-assets/blob/dev/gif/auto_com_demo.gif)
+
 **Quick Tip**: Simply hit the `Tab` key for auto-completion—unlike the usual `cd` command. Got more than one option? No problem! Just keep pressing `Tab` to cycle through all available choices. Easy, right?
 
-![auto completion demo](https://github.com/lilhammer111/hammer-assets/blob/dev/gif/auto_com_demo.gif)
